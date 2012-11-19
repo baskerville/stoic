@@ -65,9 +65,7 @@ Extra attributes are set through the YAML front matter of the markdown files.
 
 You might want to set the `layout` attribute to indicate the layout of the related item.
 
-To get the url of item `a` relative to item `b`, use the following:
-
-    a.relurl(b)
+To get the url of item `a` relative to item `b`, use the following: `a.relurl(b)`.
 
 Pagination will occur on item `a` if `items_per_page > 0`, `a.paginate` is true (and if `len(a.children) > items_per_page`).
 
