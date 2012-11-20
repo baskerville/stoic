@@ -9,7 +9,8 @@ import misaka
 from bs4 import BeautifulSoup as bs
 from copy import copy
 from getopt import getopt
-from os import curdir, makedirs, listdir
+from mimetypes import guess_type
+from os import curdir, makedirs, listdir, walk
 from os.path import join, isdir, basename, dirname 
 from os.path import splitext, relpath, normpath, abspath
 
@@ -24,6 +25,7 @@ default_layout = 'base.j2'
 source_extension = 'md'
 source_index = 'index.md'
 destination_index = 'index.html'
+thumbnail_format = 'th_{}'
 
 home = abspath(output_dir)
 items_per_page = 5
@@ -64,7 +66,6 @@ class PageItem:
             with open(filepath, 'r') as f:
                 head, body = re.search(HEAD_BODY_REGEX, f.read(), re.M | re.S).groups()
         except FileNotFoundError as exc:
-            print('file not found: {}'.format(filepath), file=sys.stderr)
             return (None, None, {})
         if head is None:
             meta = {}
@@ -154,7 +155,6 @@ class PageItem:
                     soup = bs(html)
                     f.write(soup.prettify())
             self.url = urls[0]
-            print(self.url, file=sys.stderr)
         for child in self.children:
             child.render(trail)
         trail.pop()
@@ -180,6 +180,13 @@ class PageItem:
 def chunks(a, n):
     return [a[i:i + n] for i in range(0, len(a), n)]
 
+def synchronize_assets():
+    for top_dir, dirnames, filenames in walk(site_dir):
+        for filename in filenames:
+            filetype = guess_type(join(top_dir, filename))
+            print(filename, filetype)
+    sys.exit(0)
+
 def usage():
     print('''
     SYNOPSIS
@@ -191,17 +198,25 @@ def usage():
 
         -c, --copy-mode
             Copy the unknown files to the output directory.
+
+        -o, --output-dir OUTPUT_DIR
+            Set the output directory.
     '''.format(basename(sys.argv[0])))
     sys.exit(0)
 
 def main():
-    global env, mkd, root, copy_mode
-    options, args = getopt(sys.argv[1:], 'hc', ['help', 'verbose', 'copy-mode'])
+    global env, mkd, root, copy_mode, exclude, output_dir
+    options, args = getopt(sys.argv[1:], 'hcao:', ['help', 'verbose', 'copy-mode', 'sync-assets', 'output-dir='])
     for opt, val in options:
         if opt in ('-h', '--help'):
             usage()
+        elif opt in ('-a', '--sync-assets'):
+            synchronize_assets()
         elif opt in ('-c', '--copy-mode'):
             copy_mode = True
+            exclude = []
+        elif opt in ('-o', '--output-dir'):
+            output_dir = val
     ldr = jinja2.FileSystemLoader([layouts_dir])
     env = jinja2.Environment(loader=ldr)
     env.filters.update(custom_filters)
