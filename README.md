@@ -12,6 +12,8 @@
         -c, --copy-mode
             Copy the unknown files to the output directory.
         
+        -o, --output-dir OUTPUT_DIR
+            Set the output directory.
 
 ## Description
 
@@ -52,8 +54,9 @@ The output paths are computed as so:
 The layouts will be given the following elements:
 
 - item: the node being processed, carries the following attributes:
-    - url
-    - parent
+    - content: the html content
+    - url: the url of the item relative to `home`
+    - parent: the parent item
     - children: the list of children
     - prev, next (only if paginated)
 - trail: (of type *list*), the path from item to root
