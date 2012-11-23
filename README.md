@@ -11,6 +11,9 @@
 
         -c, --copy-mode
             Copy the unknown files to the output directory.
+
+        -a, --sync-assets FILE ...
+            Synchronize the given assets.
         
         -o, --output-dir OUTPUT_DIR
             Set the output directory.
@@ -32,6 +35,7 @@ The settings are read from `./settings.py`.
 - `site_dir`: directory to build the tree of items from
 - `output_dir`: directory to render the tree to
 - `layouts_dir`: directory to read the layouts from
+- `assets_dir`: directory in which the assets are located
 - `exclude`: list of directories not to be included in the tree
 - `items_per_page`: maximum number of items per page
 - `custom_filters`: a dictionary which will be merged to the Jinja2 environment filters
@@ -39,6 +43,7 @@ The settings are read from `./settings.py`.
 - `source_extension`: file extension of the markdown files (default: 'md')
 - `source_index`: file name of the markdown *index* (default: 'index.md')
 - `destination_index`: file name of the output *index* (default: 'index.html')
+- `thumbnail_fmt`: format string used to generate the thumbnail path.
 
 ## Details
 
