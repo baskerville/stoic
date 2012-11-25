@@ -58,19 +58,12 @@ class PageItem:
                 meta = {}
         self.parent = self.prev = self.next = None
         self.children = []
-        self.title = title
         self.ignore = False
         self.paginate = False
         self.__dict__.update(meta)
         body = jinja2.Template(body).render(home=home, title=title)
         content = mkd.render(body)
         self.content = content
-        if 'layout' in meta and 'title' in meta:
-            return
-        if not hasattr(self, 'layout'):
-            self.layout = default_layout
-        if not hasattr(self, 'title'):
-            self.title = title
 
     def build(self, top_dir=site_dir):
         for filename in sorted(listdir(top_dir)):
@@ -123,7 +116,11 @@ class PageItem:
         if self.ignore or self.url is None:
             pass
         else:
-            tpl = env.get_template(self.layout)
+            if hasattr(self, 'layout'):
+                layout = self.layout
+            else:
+                layout = default_layout
+            tpl = env.get_template(layout)
             urls = [self.url]
             if hasattr(self, 'symlink'):
                 urls.append(self.symlink)
@@ -168,7 +165,7 @@ def parse(filepath):
     try:
         with open(filepath, 'r') as f:
             head, body = re.search(HEAD_BODY_REGEX, f.read(), re.M | re.S).groups()
-    except FileNotFoundError as exc:
+    except FileNotFoundError:
         return (None, None, None)
     filename = basename(filepath)
     filedir = dirname(relpath(filepath, site_dir))
@@ -203,8 +200,8 @@ def save(body, head, filepath):
     try:
         mkdir(filepath)
         with open(filepath, 'w') as fileobj:
-            print('---\n{}---\n{}'.format(head, body), file=fileobj, end='')
-    except Exception as exc:
+            print('---\n{}---\n\n{}'.format(head, body), file=fileobj, end='')
+    except Exception:
         pass
 
 def chunks(a, n):
