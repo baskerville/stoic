@@ -241,9 +241,9 @@ def synchronize_assets(filepaths):
                             asset_dir = dirname(asset_path)
                             asset_base, asset_ext = splitext(basename(asset_path))
                             meta['thumbnail'] = thumbnail_fmt.format(asset_dir, asset_base)
+                            save(body, yaml.dump(meta, default_flow_style=False), filepath=filepath)
                         del md5_to_path[source_md5]
                         del path_to_md5[asset_path]
-                        save(body, yaml.dump(meta, default_flow_style=False), filepath=filepath)
                     elif source_path in path_to_md5:
                         asset_md5 = path_to_md5[source_path]
                         print('md5 changed: {} -> {}'.format(source_md5, asset_md5))
