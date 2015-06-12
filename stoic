@@ -13,7 +13,7 @@ from mimetypes import guess_type
 from bs4 import BeautifulSoup as bs
 from os import curdir, makedirs, listdir, walk
 from os.path import join, isdir, basename, dirname 
-from os.path import splitext, relpath, normpath, abspath
+from os.path import splitext, relpath, normpath, abspath, expanduser
 
 HEAD_BODY_REGEX = '\A(?:^---$(.*)^---$)?\s*(.*)\Z'
 
@@ -307,6 +307,7 @@ def main():
             sys.exit(0)
         elif opt in ('-o', '--output-dir'):
             output_dir = val
+    output_dir = expanduser(output_dir)
     ldr = jinja2.FileSystemLoader([layouts_dir])
     env = jinja2.Environment(loader=ldr)
     env.filters.update(custom_filters)
